@@ -11,10 +11,10 @@ function buildD3Scatterplot() {
       console.log(data);
       // console.log(data);
 
-      var width = 900,
-        height =  600,
+      var width = 1024,
+        height =  768,
         barWidth = 2,
-        padding = 60;
+        padding = 120;
 
       function getDate(strDate) {
         // INPUT format "1947-01-01"
@@ -44,12 +44,16 @@ function buildD3Scatterplot() {
       });
 
       var secondsScale = d3.scaleLinear()
-        .domain([maxSeconds + 30, minSeconds - 60])
-        .range([0, width]);
+        .domain([maxSeconds + 10, minSeconds])
+        .range([0, width - 360]);
+
+      var secondsScaleAxis = d3.scaleLinear()
+        .domain([new Date(Math.abs(minSeconds - maxSeconds + 10) * 1000), new Date(0)])
+        .range([0, width - 360]);
 
       var placeScale = d3.scaleLinear()
         .domain([1, data.length + 1])
-        .range([30, height - 30]);
+        .range([padding, height - padding]);
 
       // Add dots
       var dots = svg.selectAll("circle")
@@ -60,12 +64,43 @@ function buildD3Scatterplot() {
         .attr('cy', function(d) { return placeScale(d.Place) })
         .attr('r', 5)
         .attr('fill', function(d) { return (d.Doping ? '#994242' : '#78AA78') })
-        .attr('transform', 'translate(30, -15)');
+        .attr('transform', 'translate(' + padding + ', 0)');
+
+      // Cyclist Names
+      var names = svg.selectAll('.names')
+        .data(data)
+        .enter()
+        .append('text')
+        .attr('x', function(d) { return secondsScale(d.Seconds) })
+        .attr('y', function(d) { return placeScale(d.Place) })
+        .text(function(d) { return d.Name })
+        .attr('class', 'name')
+        .attr('transform', 'translate(' + (padding + 15)+ ', 5)');
 
       // Y-Axis
-      var yAxis = svg.append('g').call(d3.axisLeft(placeScale).ticks(6))
+      var yAxis = svg.append('g').call(d3.axisLeft(placeScale).ticks(8))
         .attr('class', 'axis')
-        .attr('transform', 'translate(30, -15)');
+        .attr('transform', 'translate(' + padding + ', 0)');
+
+      // X-Axis
+      var xAxis = svg.append('g').call(d3.axisBottom(secondsScaleAxis).ticks(10).tickFormat(d3.timeFormat('%M:%S')))
+        .attr('class', 'axis')
+        .attr('transform', 'translate(' + padding + ', ' + (height - padding) + ')');
+
+      xAxis.selectAll('text')
+        .attr('x', 25)
+        .attr('dy', 15);
+
+      // Labels
+      svg.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(' + padding/2 + ', ' + padding + ')rotate(-90)')
+        .text('Ranking');
+
+      svg.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(' + (width/2 + padding) + ', ' + (height - padding/2) + ')')
+        .text('Minutes Behind Fastest Time');
 
     });
 }

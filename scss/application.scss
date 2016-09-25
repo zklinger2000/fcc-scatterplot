@@ -22,9 +22,14 @@ body {
 
 .chart text {
   fill: white;
-  font: 10px sans-serif;
+  font: 20px sans-serif;
   text-anchor: end;
 }
+.chart text.name {
+   fill: black;
+   font: 10px sans-serif;
+   text-anchor: start;
+ }
 .bar:hover {
   fill: red;
 }
