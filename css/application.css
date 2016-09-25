@@ -4,8 +4,8 @@ body {
   background-color: #eee;
   width: 100%; }
 
-.bar-chart {
-  max-width: 900px;
+.scatterplot-chart {
+  max-width: 1024px;
   margin: 0 auto;
   text-align: center; }
 
@@ -25,23 +25,32 @@ body {
   font: 10px sans-serif;
   text-anchor: start; }
 
-.bar:hover {
-  fill: red; }
+text.name:hover {
+  cursor: default;
+  fill: white; }
 
 div.tooltip {
   position: absolute;
   text-align: center;
-  width: 200px;
-  height: 4em;
-  padding: 2px;
+  width: 400px;
+  padding: 30px;
   font: 22px sans-serif;
   background: lightsteelblue;
   border: 0;
   border-radius: 8px;
   pointer-events: none;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   justify-content: space-around; }
+  div.tooltip > * {
+    flex: 1 0 120px;
+    text-align: right; }
+  div.tooltip > *:nth-child(n+7) {
+    color: red;
+    flex: 1 0 100%;
+    text-align: left; }
+  div.tooltip label {
+    font-size: 18px; }
   div.tooltip > div:first-child {
     font-weight: bold; }
 

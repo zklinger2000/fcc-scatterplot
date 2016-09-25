@@ -13,17 +13,8 @@ function buildD3Scatterplot() {
 
       var width = 1024,
         height =  768,
-        barWidth = 2,
+        radius = 5,
         padding = 120;
-
-      function getDate(strDate) {
-        // INPUT format "1947-01-01"
-        var year = strDate.substr(0, 4);
-        var month = strDate.substr(5, 2) - 1; // zero based index
-        var day = strDate.substr(8, 2);
-
-        return new Date(year, month, day);
-      }
 
       // Create a hidden tooltip element
       var div = d3.select("#app").append("div")
@@ -62,12 +53,12 @@ function buildD3Scatterplot() {
         .append('circle')
         .attr('cx', function(d) { return secondsScale(d.Seconds) })
         .attr('cy', function(d) { return placeScale(d.Place) })
-        .attr('r', 5)
+        .attr('r', radius)
         .attr('fill', function(d) { return (d.Doping ? '#994242' : '#78AA78') })
         .attr('transform', 'translate(' + padding + ', 0)');
 
       // Cyclist Names
-      var names = svg.selectAll('.names')
+      var names = svg.selectAll('.name')
         .data(data)
         .enter()
         .append('text')
@@ -75,7 +66,25 @@ function buildD3Scatterplot() {
         .attr('y', function(d) { return placeScale(d.Place) })
         .text(function(d) { return d.Name })
         .attr('class', 'name')
-        .attr('transform', 'translate(' + (padding + 15)+ ', 5)');
+        .attr('transform', 'translate(' + (padding + 15)+ ', 5)')
+        .on('mouseover', function(d) {
+          div.transition()
+            .duration(200)
+            .style('opacity', .9);
+          div.html('<div>' + d.Name + '</div>' +
+            '<div><strong>' + d.Nationality + '</strong></div>' +
+            '<label>Time</label><div>' + d.Time + '</div>' +
+            '<label>Year Accomplished</label><div>' + d.Year + '</div>' +
+            '<label>' + (d.Doping && 'Doping:') + '</label><p>' + d.Doping + '</p>'
+          )
+            .style('left', '50%')
+            .style('top', '45%');
+        })
+        .on('mouseout', function(d) {
+          div.transition()
+            .duration(500)
+            .style('opacity', 0);
+        });
 
       // Y-Axis
       var yAxis = svg.append('g').call(d3.axisLeft(placeScale).ticks(8))
@@ -102,6 +111,11 @@ function buildD3Scatterplot() {
         .attr('transform', 'translate(' + (width/2 + padding) + ', ' + (height - padding/2) + ')')
         .text('Minutes Behind Fastest Time');
 
+      svg.append('text')
+        .attr('transform', 'translate(' + (width / 2) + ', ' + 40 + ')')
+        .text('Doping in Professional Bicycle Racing')
+        .attr('font', '30px sans-serif');
+
     });
 }
 
@@ -121,10 +135,10 @@ class Chart extends Component {
 
   render() {
     return (
-      <div className="bar-chart">
-        <h1 className="bar-chart-title"></h1>
+      <div className="scatterplot-chart">
+        <h1 className="scatterplot-title"></h1>
+        <p className="scatterplot-info"></p>
         <svg className="chart"></svg>
-        <p className="bar-chart-info"></p>
       </div>
     );
   }
